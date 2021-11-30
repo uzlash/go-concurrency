@@ -1,0 +1,24 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	// fmt.Println(square(5))
+	fmt.Println(sumSquare(10))
+}
+
+func square(n int) int {
+	time.Sleep(time.Second)
+	return n * n
+}
+
+func sumSquare(n int) int {
+	sum := 0
+	for i := 1; i < n+1; i++ {
+		sum += square(i)
+	}
+	return sum
+}

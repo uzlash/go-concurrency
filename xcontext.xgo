@@ -1,0 +1,26 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+func main() {
+	//context or intention
+	foodCtx := context.Background()
+	riceCtx, cancelRiceOrder := context.WithCancel(foodCtx)
+	fmt.Println("Buy Rice")
+
+	go func() {
+		time.Sleep(time.Second)
+		cancelRiceOrder()
+	}()
+
+	select {
+	case <-time.After(time.Second * 1):
+		fmt.Println("Food is ready")
+	case <-riceCtx.Done():
+		fmt.Println(riceCtx.Err().Error())
+	}
+}

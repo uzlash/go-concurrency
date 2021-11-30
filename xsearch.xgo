@@ -1,0 +1,85 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	rand.Seed(time.Now().Unix())
+	start := time.Now()
+	data := []string{}
+	comChan := make(chan string)
+	go sweb("Kaduna", comChan, 2)
+	go simg("Kaduna", comChan)
+	go svid("Kaduna", comChan)
+
+	timeout := time.After(time.Millisecond * 500)
+	resMap := make(map[string]string)
+	for i := 0; i < 3; i++ {
+		select {
+		case w := <-comChan:
+			flag := w[:2]
+			resMap[flag] = w
+			fmt.Print(w)
+		case <-timeout:
+			fmt.Println("Timeout")
+			return
+		}
+	}
+
+	for d := range data {
+		fmt.Print(d)
+	}
+
+	end := time.Since(start)
+	fmt.Println("Whole search took", end)
+
+	// for i := 0; i < 3; i++ {
+	// 	fmt.Println(<-comChan)
+	// }
+
+	// counter := 0
+
+	// for v := range comChan {
+	// 	counter++
+	// 	fmt.Println(v)
+	// 	if counter == 3 {
+	// 		close(comChan)
+	// 		break
+	// 	}
+	// }
+	// end := time.Since(start)
+	// fmt.Println("Whole search took", end)
+}
+
+func sweb(q string, res chan string, replicas int) {
+
+	for i := 0; i < replicas; i++ {
+		go func() {
+			delay := time.Millisecond * time.Duration(rand.Intn(1000))
+			time.Sleep(delay)
+			s := fmt.Sprintf("WEb search for %v result took %v\n", q, delay)
+			res <- s
+		}()
+	}
+}
+
+func simg(q string, res chan string) {
+	delay := time.Millisecond * time.Duration(rand.Intn(1000))
+	time.Sleep(delay)
+	s := fmt.Sprintf("WEb search for %v result took %v\n", q, delay)
+	res <- s
+}
+
+func svid(q string, res chan string) {
+	delay := time.Millisecond * time.Duration(rand.Intn(1000))
+	time.Sleep(delay)
+	s := fmt.Sprintf("WEb search for %v result took %v\n", q, delay)
+	res <- s
+}
+
+func printResult(res chan string) {
+
+}

@@ -1,0 +1,55 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+var wg sync.WaitGroup
+
+func main() {
+	n := 3600
+	ch := make(chan int)
+	sumSquare(n, ch)
+	reader(n, ch)
+	// fmt.Println(square(5))
+	// resCh := sumSquare(n)
+	// for v := range resCh {
+	// 	fmt.Println(v)
+	// }
+	wg.Wait()
+	// fmt.Printf("Sum of square of %v is %v\n", n, sumSquare(n))
+}
+
+func square(n int) int {
+	time.Sleep(time.Second)
+	return n * n
+}
+
+func sumSquare(n int, ch chan int) {
+	// ch := make(chan int)
+	// sum := 0
+	for i := 1; i < n+1; i++ {
+		wg.Add(1)
+		go func(a int) {
+			defer wg.Done()
+			ch <- square(a)
+		}(i)
+	}
+	// return ch
+}
+
+func reader(n int, ch chan int) {
+	sum := 0
+	counter := 0
+	for {
+		counter++
+		sum += <-ch
+		if counter == n {
+			fmt.Println("sum square", sum)
+			close(ch)
+			break
+		}
+	}
+}
